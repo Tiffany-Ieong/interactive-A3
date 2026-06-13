@@ -126,3 +126,17 @@ body {
 .sticker:active {
     cursor: grabbing;
 }
+
+.front-content {
+    position: relative;   /* makes sticker position relative to this page */
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;     /* keeps stickers from spilling outside the page */
+}
+
+.sticker {
+    -webkit-user-drag: none;  /* disables image drag on Safari/Chrome */
+    user-drag: none;           /* disables it on other browsers */
+    user-select: none;         /* prevents selection highlighting while dragging */
+}

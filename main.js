@@ -142,7 +142,40 @@ function mouseMove(e) {
     activeSticker.style.left = (activeSticker.offsetLeft - newX) + 'px'
 }
 
-function mouseUp() {
+function mouseUp(e) {
     document.removeEventListener('mousemove', mouseMove)
+
+    if (activeSticker) {
+        // find the currently visible front page based on currentLocation
+        const currentPageId = 'f' + currentLocation
+        const currentPage = document.querySelector('#' + currentPageId)
+
+        if (currentPage) {
+            const stickerRect = activeSticker.getBoundingClientRect()
+            const pageRect = currentPage.getBoundingClientRect()
+
+            // check if sticker was dropped on the current page
+            if (
+                stickerRect.left >= pageRect.left &&
+                stickerRect.right <= pageRect.right &&
+                stickerRect.top >= pageRect.top &&
+                stickerRect.bottom <= pageRect.bottom
+            ) {
+                // calculate position relative to the page
+                const relativeTop = stickerRect.top - pageRect.top
+                const relativeLeft = stickerRect.left - pageRect.left
+
+                // move sticker inside the current page
+                currentPage.appendChild(activeSticker)
+                activeSticker.style.position = 'absolute'
+                activeSticker.style.top = relativeTop + 'px'
+                activeSticker.style.left = relativeLeft + 'px'
+            } else {
+                // dropped outside the page — leave it on the body
+                activeSticker.style.position = 'fixed'
+            }
+        }
+    }
+
     activeSticker = null
 }

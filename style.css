@@ -2,6 +2,8 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    user-select: none;
+
 }
 
 body {
@@ -109,11 +111,11 @@ body {
 }
 
 .sticker-list {
-    display:flex;
-    flex-direction:row;
-    align-items: center;
-    gap: 15px;
-    overflow: visible;       /* stops stickers getting clipped when dragged out */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);  /* exactly 3 per row */
+    gap: 10px;
+    overflow: visible;
+    padding: 5px;
 }
 
 .sticker {
@@ -140,3 +142,27 @@ body {
     user-drag: none;           /* disables it on other browsers */
     user-select: none;         /* prevents selection highlighting while dragging */
 }
+
+
+/* default size for all stickers */
+.sticker {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    cursor: grab;
+    -webkit-user-drag: none;
+    user-drag: none;
+    user-select: none;
+}
+
+/* individual sizes to make it feel like a natural sticker pack */
+.sticker[alt="bread sticker"]  { width: 45px;  height: 80px; }
+.sticker[alt="milk sticker"]   { width: 50px;  height: 90px; }
+.sticker[alt="lemon sticker"]  { width: 65px;  height: 60px; }
+.sticker[alt="egg sticker"]    { width: 70px;  height: 65px; }
+.sticker[alt="cheese sticker"] { width: 75px;  height: 60px; }
+.sticker[alt="tomato sticker"] { width: 65px;  height: 65px; }
+.sticker[alt="pizza sticker"]  { width: 100px;  height: 100px; }
+.sticker[alt="bug sticker"]    { width: 60px;  height: 60px; }
+.sticker[alt="button sticker"] { width: 55px;  height: 55px; }
+.sticker[alt="apple sticker"]  { width: 65px;  height: 70px; }

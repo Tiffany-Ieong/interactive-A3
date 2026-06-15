@@ -10,25 +10,24 @@ let isDragging = false;
 
 // listen for drag on the book to turn pages
 book.addEventListener("mousedown", (e) => {
-    dragStartX = e.clientX  // record where the drag started
+    dragStartX = e.clientX
     isDragging = true
 })
 
 book.addEventListener("mouseup", (e) => {
     if (!isDragging) return
 
-    const distance = dragStartX - e.clientX  // positive = dragged left, negative = dragged right
+    const distance = dragStartX - e.clientX
 
     if (distance > 50) {
-        goNextPage()   // dragged left enough — turn forward
+        goNextPage()
     } else if (distance < -50) {
-        goPrevPage()   // dragged right enough — turn backward
+        goPrevPage()
     }
 
     isDragging = false
 })
 
-// stops the drag if mouse leaves the book area
 book.addEventListener("mouseleave", () => {
     isDragging = false
 })
@@ -53,14 +52,26 @@ function closeBook(isAtBeginning) {
 function goNextPage() {
     if (currentLocation < maxLocation) {
         switch (currentLocation) {
-            case 1:
-                openBook();
-                paper1.classList.add("flipped");
-                paper1.style.zIndex = 1;
-                break;
+           case 1:
+    openBook();
+    paper2.style.zIndex = 0
+    paper3.style.display = 'none'    // hide paper3 immediately
+    paper1.classList.add("flipped");
+    paper1.style.zIndex = 1;
+    setTimeout(() => {
+        paper3.style.display = 'block'  // bring paper3 back after flip finishes
+        paper2.style.zIndex = 2
+        paper3.style.zIndex = 1
+    }, 500)
+    break;
             case 2:
+                // push paper3 behind during the flip so it doesn't bleed through
+                paper3.style.zIndex = 0
                 paper2.classList.add("flipped");
                 paper2.style.zIndex = 2;
+                setTimeout(() => {
+                    paper3.style.zIndex = 1
+                }, 500)
                 break;
             case 3:
                 paper3.classList.add("flipped");
@@ -87,12 +98,16 @@ function goPrevPage() {
                 paper2.style.zIndex = 2;
                 break;
             case 4:
-                openBook();
-                paper3.classList.remove("flipped");
-                paper3.style.zIndex = 1;
-                break;
-            default:
-                throw new Error("unknown state");
+    openBook();
+    paper2.style.zIndex = 0
+    paper1.style.display = 'none'    // hide paper1 immediately so it doesn't block
+    paper3.classList.remove("flipped");
+    paper3.style.zIndex = 1;
+    setTimeout(() => {
+        paper1.style.display = 'block'  // bring paper1 back after flip finishes
+        paper2.style.zIndex = 2
+    }, 500)
+    break;
         }
         currentLocation--;
     }
@@ -100,41 +115,47 @@ function goPrevPage() {
 
 //----------------------------------------------------------------------
 
-// grab all stickers from the panel
 const stickers = document.querySelectorAll('.sticker')
 
 let newX = 0, newY = 0, startX = 0, startY = 0;
 let activeSticker = null
+let originalSticker = null  // keeps reference to the original in the panel
 
-// add mousedown and dragstart listeners to every sticker
 stickers.forEach(sticker => {
     sticker.addEventListener('mousedown', mouseDown)
-
-    // prevents browser from intercepting the drag as a file drag
     sticker.addEventListener('dragstart', (e) => {
         e.preventDefault()
     })
 })
 
 function mouseDown(e) {
-    activeSticker = e.target
+    originalSticker = e.target  // remember the original in the panel
+
     startX = e.clientX
     startY = e.clientY
 
-    // get the sticker's current position on screen before moving it
-    const rect = activeSticker.getBoundingClientRect()
+    const rect = e.target.getBoundingClientRect()
 
-    // pull the sticker out of the panel and attach it to the body so it can move freely
-    document.body.appendChild(activeSticker)
+    // hide the original in the panel — keeps the gap but makes it invisible
+    originalSticker.style.visibility = 'hidden'
+
+    // create a copy to drag so it starts at the same visual position
+    const clone = e.target.cloneNode(true)
+    activeSticker = clone
+    document.body.appendChild(clone)
     activeSticker.style.position = 'fixed'
     activeSticker.style.left = rect.left + 'px'
     activeSticker.style.top = rect.top + 'px'
-    activeSticker.style.width = '70px'
-    activeSticker.style.height = '70px'
+    activeSticker.style.width = rect.width + 'px'   // preserve the sticker's original size
+    activeSticker.style.height = rect.height + 'px'
     activeSticker.style.zIndex = 1000
+    activeSticker.style.visibility = 'visible'
 
-    // stop the page turn drag from firing while dragging a sticker
     isDragging = false
+
+    activeSticker.addEventListener('dragstart', (e) => {
+        e.preventDefault()
+    })
 
     document.addEventListener('mousemove', mouseMove)
     document.addEventListener('mouseup', mouseUp)
@@ -155,24 +176,22 @@ function mouseUp(e) {
     document.removeEventListener('mousemove', mouseMove)
 
     if (activeSticker) {
-        // at each location, two page faces are visible — the back of the flipped page and the front of the next
         let possiblePageIds = []
 
         if (currentLocation === 1) {
-            possiblePageIds = ['f1']               // only cover showing
+            possiblePageIds = ['f1']
         } else if (currentLocation === 2) {
-            possiblePageIds = ['b1', 'f2']         // back of paper1 and front of paper2 both visible
+            possiblePageIds = ['b1', 'f2']
         } else if (currentLocation === 3) {
-            possiblePageIds = ['b2', 'f3']         // back of paper2 and front of paper3 both visible
+            possiblePageIds = ['b2', 'f3']
         } else if (currentLocation === 4) {
-            possiblePageIds = ['b3']               // only last page showing
+            possiblePageIds = ['b3']
         }
 
         let dropped = false
 
-        // check each visible page face to see if sticker was dropped on it
         possiblePageIds.forEach(pageId => {
-            if (dropped) return  // stop checking once a match is found
+            if (dropped) return
 
             const currentPage = document.querySelector('#' + pageId)
 
@@ -193,18 +212,21 @@ function mouseUp(e) {
                     activeSticker.style.position = 'absolute'
                     activeSticker.style.top = relativeTop + 'px'
                     activeSticker.style.left = relativeLeft + 'px'
+                    activeSticker.style.objectFit = 'contain'
 
-                    dropped = true  // found a match, stop checking
+                    // sticker successfully placed — keep the gap in the panel empty
+                    dropped = true
                 }
             }
         })
 
-        // if not dropped on any page face, leave it floating
         if (!dropped) {
-            activeSticker.style.position = 'fixed'
+            // dropped outside a page — remove the clone and restore the original in the panel
+            activeSticker.remove()
+            originalSticker.style.visibility = 'visible'
         }
     }
 
     activeSticker = null
-
+    originalSticker = null
 }

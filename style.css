@@ -65,7 +65,7 @@ body {
 }
 
 .back-content {
-    transform: rotateY(180deg);
+    transform: rotateY(-180deg);
 }
 
 .flipped .front,
@@ -92,7 +92,7 @@ body {
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
-    width: 120px;
+    width: 300px;
     height: 400px;
     background-color: #fff8e7;
     border-radius: 12px;
@@ -109,8 +109,8 @@ body {
 }
 
 .sticker-list {
-    display: flex;
-    flex-direction: column;
+    display:flex;
+    flex-direction:row;
     align-items: center;
     gap: 15px;
     overflow: visible;       /* stops stickers getting clipped when dragged out */
@@ -134,7 +134,7 @@ body {
     padding: 0;
     overflow: hidden;     /* keeps stickers from spilling outside the page */
 }
-
+/*----------------------------------*/
 .sticker {
     -webkit-user-drag: none;  /* disables image drag on Safari/Chrome */
     user-drag: none;           /* disables it on other browsers */

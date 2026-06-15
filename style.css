@@ -12,13 +12,14 @@ body {
     justify-content: center;
     align-items: center;
     font-family: sans-serif;
-    background-color: powderblue;
+    background-color: #408b86;;
+    overflow: hidden;
 }
 
 .book {
     position: relative;
-    width: 350px;
-    height: 500px;
+    width: 455px;
+    height: 650px;
     transition: transform 0.5s;
     cursor: grab;        /* shows grab cursor so user knows it's draggable */
 }
@@ -50,7 +51,7 @@ body {
 .front {
     z-index: 1;
     backface-visibility: hidden;
-    border-left: 3px solid powderblue;
+    
 }
 
 .back {
@@ -95,8 +96,8 @@ body {
     top: 50%;
     transform: translateY(-50%);
     width: 300px;
-    height: 400px;
-    background-color: #fff8e7;
+    height: 600px;
+    background-color: powderblue;
     border-radius: 12px;
     padding: 10px;
     overflow-y: scroll;      /* makes the panel scrollable */

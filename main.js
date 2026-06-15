@@ -38,7 +38,7 @@ let numOfPapers = 3;
 let maxLocation = numOfPapers + 1;
 
 function openBook() {
-    book.style.transform = "translateX(50%)";
+    book.style.transform = "translateX(30%)";
 }
 
 function closeBook(isAtBeginning) {

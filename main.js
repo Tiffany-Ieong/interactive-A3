@@ -8,7 +8,6 @@ const paper3 = document.querySelector("#p3");
 let dragStartX = 0;
 let isDragging = false;
 
-// listen for drag on the book to turn pages
 book.addEventListener("mousedown", (e) => {
     dragStartX = e.clientX
     isDragging = true
@@ -16,15 +15,12 @@ book.addEventListener("mousedown", (e) => {
 
 book.addEventListener("mouseup", (e) => {
     if (!isDragging) return
-
     const distance = dragStartX - e.clientX
-
     if (distance > 50) {
         goNextPage()
     } else if (distance < -50) {
         goPrevPage()
     }
-
     isDragging = false
 })
 
@@ -32,7 +28,6 @@ book.addEventListener("mouseleave", () => {
     isDragging = false
 })
 
-// page logic
 let currentLocation = 1;
 let numOfPapers = 3;
 let maxLocation = numOfPapers + 1;
@@ -52,20 +47,19 @@ function closeBook(isAtBeginning) {
 function goNextPage() {
     if (currentLocation < maxLocation) {
         switch (currentLocation) {
-           case 1:
-    openBook();
-    paper2.style.zIndex = 0
-    paper3.style.display = 'none'    // hide paper3 immediately
-    paper1.classList.add("flipped");
-    paper1.style.zIndex = 1;
-    setTimeout(() => {
-        paper3.style.display = 'block'  // bring paper3 back after flip finishes
-        paper2.style.zIndex = 2
-        paper3.style.zIndex = 1
-    }, 500)
-    break;
+            case 1:
+                openBook();
+                paper2.style.zIndex = 0
+                paper3.style.display = 'none'
+                paper1.classList.add("flipped");
+                paper1.style.zIndex = 1;
+                setTimeout(() => {
+                    paper3.style.display = 'block'
+                    paper2.style.zIndex = 2
+                    paper3.style.zIndex = 1
+                }, 500)
+                break;
             case 2:
-                // push paper3 behind during the flip so it doesn't bleed through
                 paper3.style.zIndex = 0
                 paper2.classList.add("flipped");
                 paper2.style.zIndex = 2;
@@ -98,16 +92,16 @@ function goPrevPage() {
                 paper2.style.zIndex = 2;
                 break;
             case 4:
-    openBook();
-    paper2.style.zIndex = 0
-    paper1.style.display = 'none'    // hide paper1 immediately so it doesn't block
-    paper3.classList.remove("flipped");
-    paper3.style.zIndex = 1;
-    setTimeout(() => {
-        paper1.style.display = 'block'  // bring paper1 back after flip finishes
-        paper2.style.zIndex = 2
-    }, 500)
-    break;
+                openBook();
+                paper2.style.zIndex = 0
+                paper1.style.display = 'none'
+                paper3.classList.remove("flipped");
+                paper3.style.zIndex = 1;
+                setTimeout(() => {
+                    paper1.style.display = 'block'
+                    paper2.style.zIndex = 2
+                }, 500)
+                break;
         }
         currentLocation--;
     }
@@ -119,7 +113,157 @@ const stickers = document.querySelectorAll('.sticker')
 
 let newX = 0, newY = 0, startX = 0, startY = 0;
 let activeSticker = null
-let originalSticker = null  // keeps reference to the original in the panel
+let originalSticker = null
+let selectedWrapper = null   // tracks the currently selected wrapper
+
+// lock the currently selected wrapper — hides the outline and handle
+function lockSticker() {
+    if (selectedWrapper) {
+        selectedWrapper.style.outline = 'none'
+        const handle = selectedWrapper.querySelector('.resize-handle')
+        if (handle) handle.style.display = 'none'
+        selectedWrapper = null
+    }
+}
+
+// show the outline and handle on a wrapper
+function selectWrapper(wrapper) {
+    if (selectedWrapper && selectedWrapper !== wrapper) {
+        lockSticker()
+    }
+    selectedWrapper = wrapper
+    wrapper.style.outline = '2px dashed rgba(64,139,134,0.8)'
+    const handle = wrapper.querySelector('.resize-handle')
+    if (handle) handle.style.display = 'flex'
+}
+
+// clicking anywhere outside a selected wrapper locks it
+document.addEventListener('click', (e) => {
+    if (selectedWrapper &&
+        !selectedWrapper.contains(e.target) &&
+        selectedWrapper.dataset.ready === 'true') {
+        lockSticker()
+    }
+})
+
+function createStickerWrapper(stickerImg, parentPage) {
+    const size = parseInt(stickerImg.style.width) || 70
+
+    // wrapper div that holds the sticker and resize handle together
+    const wrapper = document.createElement('div')
+    wrapper.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        top: ${stickerImg.style.top};
+        left: ${stickerImg.style.left};
+        cursor: pointer;
+        z-index: 500;
+    `
+
+    // sticker fills the wrapper
+    stickerImg.style.position = 'relative'
+    stickerImg.style.width = '100%'
+    stickerImg.style.height = '100%'
+    stickerImg.style.top = '0'
+    stickerImg.style.left = '0'
+    stickerImg.style.objectFit = 'contain'
+
+    // resize handle at bottom right corner
+    const handle = document.createElement('div')
+    handle.className = 'resize-handle'
+    handle.innerHTML = '&#x2921;'  // diagonal arrow ⤡
+    handle.style.cssText = `
+        position: absolute;
+        bottom: -10px;
+        right: -10px;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border: 2px solid rgba(64,139,134,0.8);
+        border-radius: 4px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: nwse-resize;
+        font-size: 14px;
+        color: rgba(64,139,134,0.8);
+        z-index: 10;
+        user-select: none;
+    `
+
+    wrapper.appendChild(stickerImg)
+    wrapper.appendChild(handle)
+    parentPage.appendChild(wrapper)
+
+    // clicking wrapper selects it
+    wrapper.addEventListener('click', (e) => {
+        e.stopPropagation()
+        selectWrapper(wrapper)
+    })
+
+    // mousedown on wrapper lets you drag it when selected
+    wrapper.addEventListener('mousedown', (e) => {
+        if (e.target === handle) return  // handle has its own drag logic
+        if (selectedWrapper !== wrapper) return  // only draggable when selected
+
+        e.stopPropagation()
+        isDragging = false
+
+        startX = e.clientX
+        startY = e.clientY
+
+        const rect = wrapper.getBoundingClientRect()
+        document.body.appendChild(wrapper)
+        wrapper.style.position = 'fixed'
+        wrapper.style.left = rect.left + 'px'
+        wrapper.style.top = rect.top + 'px'
+        wrapper.style.zIndex = 1000
+
+        activeSticker = wrapper
+
+        document.addEventListener('mousemove', mouseMove)
+        document.addEventListener('mouseup', mouseUp)
+    })
+
+    // dragging the handle resizes the wrapper proportionally
+    handle.addEventListener('mousedown', (e) => {
+        e.stopPropagation()
+        isDragging = false
+
+        const startMouseX = e.clientX
+        const startMouseY = e.clientY
+        const startSize = wrapper.offsetWidth
+
+        function onResizeMove(e) {
+            const dx = e.clientX - startMouseX
+            const dy = e.clientY - startMouseY
+            // average dx and dy for proportional resize
+            const delta = (dx + dy) / 2
+            const newSize = Math.min(500, Math.max(10, startSize + delta))
+            wrapper.style.width = newSize + 'px'
+            wrapper.style.height = newSize + 'px'
+        }
+
+        function onResizeUp() {
+            document.removeEventListener('mousemove', onResizeMove)
+            document.removeEventListener('mouseup', onResizeUp)
+        }
+
+        document.addEventListener('mousemove', onResizeMove)
+        document.addEventListener('mouseup', onResizeUp)
+    })
+
+    // show the outline and handle immediately after placing
+    selectWrapper(wrapper)
+
+    // small delay before click-to-lock activates so the drop mouseup doesn't immediately lock it
+    setTimeout(() => {
+        wrapper.dataset.ready = 'true'
+    }, 100)
+
+    return wrapper
+}
 
 stickers.forEach(sticker => {
     sticker.addEventListener('mousedown', mouseDown)
@@ -129,24 +273,24 @@ stickers.forEach(sticker => {
 })
 
 function mouseDown(e) {
-    originalSticker = e.target  // remember the original in the panel
+    originalSticker = e.target
 
     startX = e.clientX
     startY = e.clientY
 
     const rect = e.target.getBoundingClientRect()
 
-    // hide the original in the panel — keeps the gap but makes it invisible
+    // hide original in panel to leave a gap
     originalSticker.style.visibility = 'hidden'
 
-    // create a copy to drag so it starts at the same visual position
+    // create a clone to drag
     const clone = e.target.cloneNode(true)
     activeSticker = clone
     document.body.appendChild(clone)
     activeSticker.style.position = 'fixed'
     activeSticker.style.left = rect.left + 'px'
     activeSticker.style.top = rect.top + 'px'
-    activeSticker.style.width = rect.width + 'px'   // preserve the sticker's original size
+    activeSticker.style.width = rect.width + 'px'
     activeSticker.style.height = rect.height + 'px'
     activeSticker.style.zIndex = 1000
     activeSticker.style.visibility = 'visible'
@@ -162,6 +306,7 @@ function mouseDown(e) {
 }
 
 function mouseMove(e) {
+    if (!activeSticker) return
     newX = startX - e.clientX
     newY = startY - e.clientY
 
@@ -208,22 +353,24 @@ function mouseUp(e) {
                     const relativeTop = stickerRect.top - pageRect.top
                     const relativeLeft = stickerRect.left - pageRect.left
 
-                    currentPage.appendChild(activeSticker)
-                    activeSticker.style.position = 'absolute'
+                    // set position before wrapping
                     activeSticker.style.top = relativeTop + 'px'
                     activeSticker.style.left = relativeLeft + 'px'
-                    activeSticker.style.objectFit = 'contain'
 
-                    // sticker successfully placed — keep the gap in the panel empty
+                    // wrap the sticker with the resize handle
+                    createStickerWrapper(activeSticker, currentPage)
+
                     dropped = true
                 }
             }
         })
 
         if (!dropped) {
-            // dropped outside a page — remove the clone and restore the original in the panel
+            // not dropped on a page — remove clone and restore original
             activeSticker.remove()
-            originalSticker.style.visibility = 'visible'
+            if (originalSticker) {
+                originalSticker.style.visibility = 'visible'
+            }
         }
     }
 

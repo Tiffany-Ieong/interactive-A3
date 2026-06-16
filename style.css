@@ -156,14 +156,14 @@ body {
     user-select: none;
 }
 
-/* individual sizes to make it feel like a natural sticker pack */
+/* individual sizes to make it feel like a natural sticker pack 
 .sticker[alt="bread sticker"]  { width: 45px;  height: 80px; }
 .sticker[alt="milk sticker"]   { width: 50px;  height: 90px; }
 .sticker[alt="lemon sticker"]  { width: 65px;  height: 60px; }
 .sticker[alt="egg sticker"]    { width: 70px;  height: 65px; }
 .sticker[alt="cheese sticker"] { width: 75px;  height: 60px; }
 .sticker[alt="tomato sticker"] { width: 65px;  height: 65px; }
-.sticker[alt="pizza sticker"]  { width: 100px;  height: 100px; }
 .sticker[alt="bug sticker"]    { width: 60px;  height: 60px; }
 .sticker[alt="button sticker"] { width: 55px;  height: 55px; }
-.sticker[alt="apple sticker"]  { width: 65px;  height: 70px; }
+.sticker[alt="apple sticker"]  { width: 65px;  height: 70px; }*/
+

@@ -59,7 +59,9 @@
     <div class="sticker-panel">
     <div class="sticker-list">
         <!-- each img here is a draggable sticker -->
-         <!-- alt text describes the sticker for accessibility and is also used in CSS for individual sizing -->
+         <!-- I chose to place the stickers inside a dedicated side panel to mimic the
+          experience of browsing a physical sticker sheet before selecting a sticker. 
+          Keeping all stickers in one location also helps users quickly understand where interactive elements are located. -->
         <img class="sticker" src="IMAGES/bug.png" alt="bug sticker">
         <img class="sticker" src="IMAGES/button.png" alt="button sticker">
         <img class="sticker" src="IMAGES/apple.png" alt="apple sticker">
@@ -101,5 +103,20 @@
         <img class="sticker" src="IMAGES/flower.png" alt="flower sticker">
     </div>
 </div>
+<!-- I considered allowing stickers to duplicate infinitely when dragged from the panel.
+ However, I decided to limit each sticker to a single instance to better reflect the experience 
+ of using a real sticker book, where each sticker can only be used once. -->
+
 </body>
 </html>
+
+<!--During development, I simplified the original concept from a story-driven sticker 
+book with multiple routes and activities into a focused sticker-book experience. 
+While the original idea was exciting, the scope became quite ambitious for my skillset now.
+Since the brief emphasises creating a prototype around a single interaction,
+I decided to concentrate on refining the drag-and-drop experience instead. -->
+
+<!--FUTURE IMPROVMENT-->
+<!--If I continue developing this project, I would like to revisit the original concept of a story-driven sticker book. 
+Include multiple pages, different activities, and choices that influence the user's journey throughout the day 
+while still using drag as the primary interaction.-->

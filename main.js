@@ -173,6 +173,7 @@ function mouseDown(e) {
     // hide the original sticker in the panel
     // it still stays in place but becomes invisible 
     // which the other sticker won't move up keeps the gap between them when a sticker is taken
+    // I think keeping the gap between them fits the aesthetic of a sticker pack. 
 
     // create an identical copy of the sticker to drag around
     const clone = e.target.cloneNode(true)

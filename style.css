@@ -1,61 +1,82 @@
+/* applies to every single element on the page */
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    /* removes all default spacing the browser adds around elements */
     user-select: none;
-
+    /* prevents any text or element from being highlighted when the user clicks and drags */
 }
 
 body {
     height: 100vh;
     display: flex;
+    /* turns the body into a flex container so it can centre its children */
     justify-content: center;
+    /* centres children horizontally */
     align-items: center;
-    font-family: sans-serif;
-    background-color: #408b86;;
+    /* centres children vertically */
+    background-color: #408b86;
     overflow: hidden;
+    /* hides any content that spills outside the window, prevents scrollbars appearing during page turns */
 }
+
+/* ---- BOOK ---- */
+/*the styling and animation is referencing the same youtube video referenced in JS:https://youtu.be/0kD6ff2J3BQ?si=in4orvxzq70eiccH */
 
 .book {
     position: relative;
+    /* makes the book a positioning context so papers inside can be stacked on top of each other */
     width: 455px;
     height: 650px;
+    /* fixed size — the book never resizes when the window changes */
     transition: transform 0.5s;
-    cursor: grab;        /* shows grab cursor so user knows it's draggable */
+    /* animates the book sliding left and right when pages turn */
+    cursor: grab;
+    /* shows a hand cursor when the cursor is on the book to tell the user the book is draggable */
 }
 
 .book:active {
-    cursor: grabbing;    /* changes to grabbing cursor while dragging */
+    cursor: grabbing;
+    /* changes the cursor to a closed fist while the user is actively dragging */
 }
 
 .paper {
     position: absolute;
+    /* takes each paper out of normal flow and stacks them all on top of each other inside the book */
     width: 100%;
     height: 100%;
+    /* each paper fills the full size of the book */
     top: 0;
     left: 0;
+    /* pins every paper to the top left corner of the book */
     perspective: 1500px;
+    /* adds depth to the 3D flip, the number is set as 1500px which is high enough to make the 3D effect less dramatic */
 }
 
 .front,
 .back {
     position: absolute;
+    /* both faces sit on top of each other inside the paper */
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
     transform-origin: left;
+    /* makes the flip rotation happen from the left edge*/
     transition: transform 0.5s;
+    /* smoothly animates the page flip over 0.5 seconds */
 }
 
 .front {
     z-index: 1;
+    /* the front face sits on top of the back face by default */
     backface-visibility: hidden;
-    
+    /* hides the front face when it has been rotated past 90 degrees so you never see it from behind */
 }
 
 .back {
     z-index: 0;
+    /* the back face sits behind the front face by default */
 }
 
 .front-content,
@@ -65,57 +86,68 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    /* centres whatever is inside*/
 }
 
 .back-content {
     transform: rotateY(-180deg);
+    /* the back content starts pre-rotated 180 degrees so it faces the right way after the page flips */
 }
 
+/* when a paper has the flipped class added by JS, both its front and back rotate -180 degrees */
 .flipped .front,
 .flipped .back {
     transform: rotateY(-180deg);
+    /* this is what creates the actual page flip animation */
 }
 
+/* each paper has a different z-index so they stack correctly like real book pages */
 #p1 { z-index: 3; }
+/* paper 1 sits on top which is the first page */
 #p2 { z-index: 2; }
+/* paper 2 sits in the middle */
 #p3 { z-index: 1; }
+/* paper 3 sits at the bottom of the stack */
 
 .front-content img,
 .back-content img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* scales the image to fill the box completely, cropping the edges slightly if needed */
 }
 
-/*----------------------------------------------------------------------*/
-
+/* ---- STICKER PANEL ---- */
 
 .sticker-panel {
     position: fixed;
+    /* pins the panel to the screen so it stays in place even when the book moves */
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
+    /* centres the panel vertically on the screen */
     width: 300px;
     height: 600px;
+    /* fixed size for the panel */
     background-color: powderblue;
     border-radius: 12px;
+    /* rounds the corners of the panel */
     padding: 10px;
-    overflow-y: scroll;      /* makes the panel scrollable */
-    overflow-x: visible;     /* allows stickers to be dragged out sideways */
+    overflow-y: scroll;
+    /* makes the panel scrollable vertically so all stickers are reachable */
+    overflow-x: visible;
+    /* allows stickers to visually extend outside the panel horizontally when being dragged out */
 }
 
-.panel-title {
-    text-align: center;
-    font-size: 14px;
-    margin-bottom: 10px;
-    color: #888;
-}
 
 .sticker-list {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);  /* exactly 3 per row */
+    /* arranges the stickers in a grid layout */
+    grid-template-columns: repeat(3, 1fr);
+    /* creates exactly 3 sticker each columns, repeat and arrange automatically as more stickers are added */
     gap: 10px;
     overflow: visible;
+    /* allows stickers to visually extend outside the grid when dragged */
     padding: 5px;
 }
 
@@ -123,50 +155,33 @@ body {
     width: 70px;
     height: 70px;
     object-fit: contain;
+    /* scales the sticker image to fit inside the box without stretching or cropping */
     cursor: grab;
+    /* shows a hand cursor to tell the user the sticker is draggable */
+    user-select: none;
+    /* prevents the sticker from being selected or highlighted while dragging*/
 }
 
 .sticker:active {
     cursor: grabbing;
+    /* changes cursor to a closed fist while the sticker is being dragged */
 }
 
+/* makes sticker position relative to the page so placed stickers use the page as their anchor point */
 .front-content {
-    position: relative;   /* makes sticker position relative to this page */
+    position: relative;
     width: 100%;
     height: 100%;
     padding: 0;
-    overflow: hidden;     /* keeps stickers from spilling outside the page */
-}
-/*----------------------------------*/
-.sticker {
-    -webkit-user-drag: none;  /* disables image drag on Safari/Chrome */
-    user-drag: none;           /* disables it on other browsers */
-    user-select: none;         /* prevents selection highlighting while dragging */
+    overflow: hidden;
+    /* clips any sticker that goes outside the page boundary */
 }
 
+/* I originally planned to give each sticker a fixed size, but I decided to add a resize feature instead. 
+This gives users more freedom to customise their page and also extends the use of drag*/
 
-/* default size for all stickers */
-.sticker {
-    width: 70px;
-    height: 70px;
-    object-fit: contain;
-    cursor: grab;
-    -webkit-user-drag: none;
-    user-drag: none;
-    user-select: none;
-}
 
-/* individual sizes to make it feel like a natural sticker pack 
-.sticker[alt="bread sticker"]  { width: 45px;  height: 80px; }
-.sticker[alt="milk sticker"]   { width: 50px;  height: 90px; }
-.sticker[alt="lemon sticker"]  { width: 65px;  height: 60px; }
-.sticker[alt="egg sticker"]    { width: 70px;  height: 65px; }
-.sticker[alt="cheese sticker"] { width: 75px;  height: 60px; }
-.sticker[alt="tomato sticker"] { width: 65px;  height: 65px; }
-.sticker[alt="bug sticker"]    { width: 60px;  height: 60px; }
-.sticker[alt="button sticker"] { width: 55px;  height: 55px; }
-.sticker[alt="apple sticker"]  { width: 65px;  height: 70px; }*/
-
+/* ---- Sticker resize wrapper ---- */
 /* wrapper that holds a placed sticker and its resize handle */
 .sticker-wrapper {
     position: absolute;
@@ -203,3 +218,4 @@ body {
 .sticker-wrapper.selected .resize-handle {
     display: flex;
 }
+

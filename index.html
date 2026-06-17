@@ -9,8 +9,11 @@
     <script src="./main.js" defer></script>
 </head>
 <body>
+
+    <!-- a single container div that holds all the papers inside it -->
     <div id="book" class="book">
         <!-- Paper 1 -->
+        <!-- each paper div represents one physical page in the book -->
         <div id="p1" class="paper">
             <div class="front">
                 <div id="f1" class="front-content">
@@ -51,8 +54,12 @@
         </div>
     </div>
 
+
+    <!-- the sticker panel div is separate from the book div so it stays fixed while the book moves -->
     <div class="sticker-panel">
     <div class="sticker-list">
+        <!-- each img here is a draggable sticker -->
+         <!-- alt text describes the sticker for accessibility and is also used in CSS for individual sizing -->
         <img class="sticker" src="IMAGES/bug.png" alt="bug sticker">
         <img class="sticker" src="IMAGES/button.png" alt="button sticker">
         <img class="sticker" src="IMAGES/apple.png" alt="apple sticker">

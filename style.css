@@ -10,11 +10,8 @@
 body {
     height: 100vh;
     display: flex;
-    /* turns the body into a flex container so it can centre its children */
     justify-content: center;
-    /* centres children horizontally */
     align-items: center;
-    /* centres children vertically */
     background-color: #408b86;
     overflow: hidden;
     /* hides any content that spills outside the window, prevents scrollbars appearing during page turns */
@@ -86,7 +83,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* centres whatever is inside*/
 }
 
 .back-content {
@@ -128,10 +124,8 @@ body {
     /* centres the panel vertically on the screen */
     width: 300px;
     height: 600px;
-    /* fixed size for the panel */
     background-color: powderblue;
     border-radius: 12px;
-    /* rounds the corners of the panel */
     padding: 10px;
     overflow-y: scroll;
     /* makes the panel scrollable vertically so all stickers are reachable */
@@ -186,7 +180,7 @@ This gives users more freedom to customise their page and also extends the use o
 .sticker-wrapper {
     position: absolute;
     cursor: pointer;
-    z-index: 500;
+    z-index: 600;
 }
 
 /* the selected state — dashed outline appears when wrapper is clicked */
@@ -204,7 +198,7 @@ This gives users more freedom to customise their page and also extends the use o
     background: white;
     border: 2px solid rgba(64,139,134,0.8);
     border-radius: 4px;
-    display: none;           /* hidden by default */
+    display: none;          
     align-items: center;
     justify-content: center;
     cursor: nwse-resize;

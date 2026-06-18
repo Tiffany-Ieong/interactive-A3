@@ -406,16 +406,13 @@ function mouseUp(e) {
 // the resize interaction is built using the same three-event pattern
 // taught in these references:
 //
-// Article: "Making a resizable div in JS is not easy as you think"
 // https://medium.com/the-z/making-a-resizable-div-in-js-is-not-easy-as-you-think-bda19a1bc53d
 // key idea from this article: attach mousemove and mouseup to the document instead of the handle
 // so resizing continues even if the mouse moves outside the handle
 //
-// Article: "How to Make HTML Elements Resizable Using Pure JavaScript"
 // https://www.xjavascript.com/blog/how-to-make-html-element-resizable-using-pure-javascript/
 // key idea: record startX, startY and startWidth on mousedown, then calculate delta on mousemove
 //
-// Article: "Draggable and Resizable Window on your Website"
 // https://dev.to/mazhugasergei/-draggable-resizable-window-on-your-website-3b7i
 // key idea: mousedown binds mousemove and mouseup, mouseup removes them, same pattern used here
 // ============================================================

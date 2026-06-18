@@ -165,8 +165,6 @@ let dragOriginY = 0
 // saves the true starting y position when the drag begins, used in mouseUp to detect accidental clicks
 
 let activeSticker = null
-// activeSticker tracks which sticker is currently being dragged
-
 let originalSticker = null
 // originalSticker keeps a reference to the original image in the panel
 // so we can show or hide it depending on whether the drag was successful
